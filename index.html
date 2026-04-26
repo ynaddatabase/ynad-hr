@@ -7,60 +7,98 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        .stat-box { background: #fff; border-radius: 10px; padding: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .stat-box { background: #fff; border-radius: 10px; padding: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #eee; }
         .holiday-row { background-color: #ffebee !important; color: #c62828; font-weight: bold; }
-        .header-bg { background-color: #2c3e50; color: white; padding: 20px; border-radius: 0 0 20px 20px; }
+        .header-bg { background-color: #2c3e50; color: white; padding: 30px 20px; border-radius: 0 0 25px 25px; margin-bottom: 30px; }
+        .card-custom { border-radius: 15px; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-submit { background-color: #27ae60; color: white; font-weight: bold; border: none; }
+        .btn-submit:hover { background-color: #219150; }
+        .badge-present { background-color: #27ae60; }
+        .badge-outside { background-color: #2980b9; }
+        .badge-leave { background-color: #e74c3c; }
     </style>
 </head>
 <body class="bg-light">
 
-<div class="header-bg text-center mb-4">
-    <h2>YNAD CONSTRUCTION</h2>
-    <p>Monthly Official Working Report Automation</p>
+<div class="header-bg text-center shadow">
+    <h2 class="fw-bold">YNAD CONSTRUCTION</h2>
+    <p class="mb-0 opacity-75">Field Office - Monthly Official Working Report Automation</p>
 </div>
 
 <div class="container">
-    <div class="card p-4 shadow-sm mb-4 border-0">
+    <div class="card card-custom p-4 mb-4 shadow-sm" style="border-left: 5px solid #27ae60;">
+        <h5 class="mb-3 fw-bold text-success">Daily Report Submission</h5>
+        <form id="entryForm">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Select Date</label>
+                    <input type="date" id="workDate" class="form-control shadow-sm" required>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label small fw-bold">Working Details</label>
+                    <input type="text" id="workDetails" class="form-control shadow-sm" placeholder="Write your work details here..." required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">Duty Status</label>
+                    <select id="workRemarks" class="form-select shadow-sm">
+                        <option value="Present">Normal Duty</option>
+                        <option value="Work on Outside">Work on Outside</option>
+                        <option value="Personal Leave">Personal Leave</option>
+                        <option value="Medical Leave">Medical Leave</option>
+                        <option value="Absent">Absent</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" id="submitBtn" class="btn btn-submit w-100 shadow-sm py-2">Submit Report</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="card card-custom p-4 mb-4 shadow-sm">
+        <h5 class="mb-3 fw-bold text-primary">Filter & View Reports</h5>
         <div class="row g-3">
-            <div class="col-md-3">
-                <label class="form-label">Employee</label>
-                <select id="empSelect" class="form-select"></select>
+            <div class="col-md-4">
+                <label class="form-label small fw-bold">Employee Name</label>
+                <select id="empSelect" class="form-select shadow-sm"></select>
             </div>
             <div class="col-md-3">
-                <label class="form-label">From Date</label>
-                <input type="date" id="fromDate" class="form-control">
+                <label class="form-label small fw-bold">From Date</label>
+                <input type="date" id="fromDate" class="form-control shadow-sm">
             </div>
             <div class="col-md-3">
-                <label class="form-label">To Date</label>
-                <input type="date" id="toDate" class="form-control">
+                <label class="form-label small fw-bold">To Date</label>
+                <input type="date" id="toDate" class="form-control shadow-sm">
             </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <button onclick="fetchReports()" class="btn btn-primary w-100">Filter Activities</button>
+            <div class="col-md-2 d-flex align-items-end">
+                <button onclick="fetchReports()" class="btn btn-primary w-100 shadow-sm fw-bold py-2">View Data</button>
             </div>
         </div>
     </div>
 
     <div class="row mb-4 g-3">
-        <div class="col-md-2"><div class="stat-box"><h6>Working Days</h6><h4 id="statWorking">0</h4></div></div>
-        <div class="col-md-2"><div class="stat-box text-success"><h6>Present</h6><h4 id="statPresent">0</h4></div></div>
-        <div class="col-md-2"><div class="stat-box text-primary"><h6>Outside</h6><h4 id="statOutside">0</h4></div></div>
-        <div class="col-md-2"><div class="stat-box text-danger"><h6>Leave</h6><h4 id="statLeave">0</h4></div></div>
-        <div class="col-md-2"><div class="stat-box text-warning"><h6>Holiday</h6><h4 id="statHoliday">0</h4></div></div>
-        <div class="col-md-2"><div class="stat-box bg-dark text-white"><h6>Absent</h6><h4 id="statAbsent">0</h4></div></div>
+        <div class="col-md-2 col-6"><div class="stat-box"><h6>Total Days</h6><h4 id="statWorking" class="fw-bold">0</h4></div></div>
+        <div class="col-md-2 col-6"><div class="stat-box text-success"><h6>Present</h6><h4 id="statPresent" class="fw-bold">0</h4></div></div>
+        <div class="col-md-2 col-6"><div class="stat-box text-primary"><h6>Outside</h6><h4 id="statOutside" class="fw-bold">0</h4></div></div>
+        <div class="col-md-2 col-6"><div class="stat-box text-danger"><h6>Leave</h6><h4 id="statLeave" class="fw-bold">0</h4></div></div>
+        <div class="col-md-2 col-6"><div class="stat-box text-warning"><h6>Holiday</h6><h4 id="statHoliday" class="fw-bold">0</h4></div></div>
+        <div class="col-md-2 col-6"><div class="stat-box bg-dark text-white"><h6>Absent</h6><h4 id="statAbsent" class="fw-bold">0</h4></div></div>
     </div>
 
-    <div class="card shadow-sm border-0">
+    <div class="card card-custom shadow border-0 mb-5">
         <div class="table-responsive">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover mb-0 align-middle">
                 <thead class="table-dark">
                     <tr>
-                        <th>Date</th>
+                        <th class="ps-3">Date</th>
                         <th>Day</th>
                         <th>Working Details</th>
                         <th>Remarks</th>
                     </tr>
                 </thead>
-                <tbody id="reportTableBody"></tbody>
+                <tbody id="reportTableBody">
+                    <tr><td colspan="4" class="text-center p-5 text-muted">Select an employee and click "View Data"</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
