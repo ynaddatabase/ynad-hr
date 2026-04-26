@@ -3,206 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YNAD CONSTRUCTION - HR Management</title>
+    <title>YNAD HR - Secure Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        :root { --primary: #2c3e50; --secondary: #27ae60; --accent: #3498db; }
-        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; color: #333; }
+        :root { --primary: #2c3e50; --admin-color: #e74c3c; --user-color: #27ae60; }
+        body { background-color: #f4f7f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        /* Header & Navigation */
-        .header-bg { background: linear-gradient(135deg, var(--primary), #1a252f); color: white; padding: 50px 0; border-radius: 0 0 40px 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); position: relative; }
+        /* Login Overlay */
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: white; padding: 40px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
         
-        /* Floating Add Button */
-        .add-emp-btn { position: absolute; bottom: -30px; right: 50px; width: 65px; height: 65px; border-radius: 50%; background: var(--secondary); color: white; border: 5px solid white; font-size: 26px; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.2); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; text-decoration: none; }
-        .add-emp-btn:hover { transform: translateY(-5px) scale(1.05); background: #219150; color: white; }
-
-        /* Card Designs */
-        .card-custom { border-radius: 20px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.05); background: white; padding: 30px; margin-bottom: 30px; }
-        .section-title { font-weight: 700; font-size: 1.25rem; margin-bottom: 25px; display: flex; align-items: center; }
-        .section-title i { margin-right: 12px; color: var(--accent); }
-
-        /* Form Styling */
-        .modal-content { border-radius: 25px; border: none; overflow: hidden; }
-        .modal-header { background: var(--primary); color: white; padding: 20px 30px; }
-        .form-label { font-size: 0.85rem; font-weight: 600; color: #555; margin-top: 10px; }
-        .form-control, .form-select { border-radius: 10px; border: 1px solid #ddd; padding: 10px 15px; }
-        .form-control:focus { box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); border-color: var(--accent); }
-
-        /* Table Styling */
-        .table { border-collapse: separate; border-spacing: 0 10px; }
-        .table thead th { border: none; background: #f8f9fa; color: #777; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; padding: 15px; }
-        .table tbody tr { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: 0.2s; }
-        .table tbody td { padding: 15px; vertical-align: middle; border: none; }
-        .table tbody tr:hover { transform: scale(1.01); background: #fafafa; }
+        /* Main UI */
+        .header-bg { background: var(--primary); color: white; padding: 40px 0; border-radius: 0 0 30px 30px; margin-bottom: 30px; position: relative; }
+        .hidden { display: none !important; }
+        
+        /* Float Button */
+        .add-emp-btn { position: absolute; bottom: -25px; right: 50px; width: 60px; height: 60px; border-radius: 50%; background: var(--admin-color); color: white; border: 4px solid white; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; text-decoration: none; }
     </style>
 </head>
 <body>
 
-<div class="header-bg text-center">
-    <div class="container">
-        <h1 class="fw-bold display-5">YNAD CONSTRUCTION</h1>
-        <p class="lead opacity-75">Corporate Field Office & HR Portal</p>
+<div id="loginOverlay">
+    <div class="login-box text-center">
+        <h3 class="fw-bold mb-4">YNAD Portal Login</h3>
+        <input type="text" id="loginId" class="form-control mb-3" placeholder="Enter Employee ID">
+        <input type="password" id="loginPin" class="form-control mb-4" placeholder="Enter PIN">
+        <button onclick="attemptLogin()" class="btn btn-primary w-100 fw-bold py-2">Login</button>
+        <p id="loginError" class="text-danger mt-3 small hidden">Invalid ID or PIN!</p>
     </div>
-    <a href="#" class="add-emp-btn" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
-        <i class="fas fa-plus"></i>
-    </a>
 </div>
 
-<div class="container mt-5 mb-5">
-    
-    <div class="card card-custom border-start border-4 border-success">
-        <h5 class="section-title"><i class="fas fa-tasks"></i> Daily Working Report Submission</h5>
-        <form id="entryForm">
+<div id="mainContent" class="hidden">
+    <div class="header-bg text-center">
+        <div class="container">
+            <h1 class="fw-bold">YNAD CONSTRUCTION</h1>
+            <p id="userWelcome" class="opacity-75">Welcome, User</p>
+            <button onclick="logout()" class="btn btn-sm btn-outline-light mt-2">Logout</button>
+        </div>
+        <a href="#" id="adminAddBtn" class="add-emp-btn hidden" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+            <i class="fas fa-user-plus"></i>
+        </a>
+    </div>
+
+    <div class="container mb-5">
+        <div class="card p-4 shadow-sm border-0 rounded-4 mb-4">
+            <h5 class="fw-bold text-success mb-3"><i class="fas fa-edit"></i> Submit Daily Report</h5>
             <div class="row g-3">
                 <div class="col-md-4">
-                    <label class="form-label">Employee Name</label>
-                    <select id="empSelect" class="form-select shadow-sm" required>
-                        <option value="">-- Choose From List --</option>
-                    </select>
+                    <input type="text" id="currentUserDisplay" class="form-control bg-light" readonly>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Report Date</label>
-                    <input type="date" id="workDate" class="form-control shadow-sm" required>
+                    <input type="date" id="workDate" class="form-control">
                 </div>
                 <div class="col-md-5">
-                    <label class="form-label">Work Description / Progress</label>
-                    <input type="text" id="workDetails" class="form-control shadow-sm" placeholder="Summarize your daily achievements..." required>
+                    <input type="text" id="workDetails" class="form-control" placeholder="Work description...">
                 </div>
-                <div class="col-12 text-end mt-3">
-                    <button type="submit" class="btn btn-success px-5 fw-bold shadow-sm">Submit To Records</button>
+                <div class="col-12 text-end">
+                    <button class="btn btn-success px-5">Submit</button>
                 </div>
-            </div>
-        </form>
-    </div>
-
-    <div class="card card-custom">
-        <h5 class="section-title"><i class="fas fa-database"></i> Monthly Official Records</h5>
-        <div class="row g-3 mb-4 bg-light p-3 rounded-4">
-            <div class="col-md-5">
-                <select id="filterEmp" class="form-select border-0 shadow-sm"></select>
-            </div>
-            <div class="col-md-4">
-                <input type="month" id="filterMonth" class="form-control border-0 shadow-sm">
-            </div>
-            <div class="col-md-3">
-                <button class="btn btn-primary w-100 fw-bold shadow-sm">View Report</button>
             </div>
         </div>
-        <div class="table-responsive">
-            <table class="table align-middle">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Day</th>
-                        <th>Work Description</th>
-                        <th>Duty Status</th>
-                    </tr>
-                </thead>
-                <tbody id="reportTableBody">
+
+        <div class="card p-4 shadow-sm border-0 rounded-4">
+            <h5 class="fw-bold mb-4">Monthly Working Records</h5>
+            <div id="adminFilter" class="row g-3 mb-4 hidden">
+                <div class="col-md-6"><select id="filterEmp" class="form-select"></select></div>
+                <div class="col-md-4"><input type="month" id="filterMonth" class="form-control"></div>
+                <div class="col-md-2"><button class="btn btn-dark w-100">Filter</button></div>
+            </div>
+            <div id="userFilter" class="row g-3 mb-4">
+                <div class="col-md-10"><input type="month" class="form-control" placeholder="Select Month"></div>
+                <div class="col-md-2"><button class="btn btn-primary w-100">View My Data</button></div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr><th>Date</th><th>Day</th><th>Working Details</th><th>Remarks</th></tr>
+                    </thead>
+                    <tbody id="reportTableBody">
+                        <tr><td colspan="4" class="text-center text-muted">No records found.</td></tr>
                     </tbody>
-            </table>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content shadow-lg">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold"><i class="fas fa-user-plus me-2"></i> Register New Staff Information</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal fade" id="addEmployeeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Admin: Register New Employee</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-4">
-                <form id="hrForm">
-                    <div class="row g-3">
-                        <div class="col-12"><h6 class="text-primary fw-bold border-bottom pb-2">Personal & Contact Details</h6></div>
-                        <div class="col-md-4">
-                            <label class="form-label">Employee Name</label>
-                            <input type="text" id="hrName" class="form-control" required>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">ID Number</label>
-                            <input type="text" id="hrEmpId" class="form-control" placeholder="Unique ID" required>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Blood Group</label>
-                            <select id="hrBG" class="form-select">
-                                <option value="">Select</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="O+">O+</option><option value="O-">O-</option><option value="AB+">AB+</option><option value="AB-">AB-</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Personal Phone</label>
-                            <input type="text" id="hrPhone" class="form-control">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Alternative Phone</label>
-                            <input type="text" id="hrAltPhone" class="form-control">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Personal Email</label>
-                            <input type="email" id="hrEmail" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Portfolio / Social Link</label>
-                            <input type="text" id="hrPortfolio" class="form-control">
-                        </div>
-
-                        <div class="col-12 mt-4"><h6 class="text-primary fw-bold border-bottom pb-2">Office & Professional Info</h6></div>
-                        <div class="col-md-2">
-                            <label class="form-label">Grade</label>
-                            <input type="text" id="hrGrade" class="form-control">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Post</label>
-                            <input type="text" id="hrPost" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Designation</label>
-                            <input type="text" id="hrDesignation" class="form-control" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Category of Office</label>
-                            <input type="text" id="hrCategory" class="form-control" placeholder="e.g. Field Office">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Education Qualification</label>
-                            <input type="text" id="hrEdu" class="form-control">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Date of Joining</label>
-                            <input type="date" id="hrJoinDate" class="form-control">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Work Duration (Contract)</label>
-                            <input type="text" id="hrDuration" class="form-control">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Current Salary</label>
-                            <input type="number" id="hrSalary" class="form-control">
-                        </div>
-
-                        <div class="col-12 mt-4"><h6 class="text-primary fw-bold border-bottom pb-2">Identification & Bank Details</h6></div>
-                        <div class="col-md-4">
-                            <label class="form-label">Bank A/C Number</label>
-                            <input type="text" id="hrBank" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">NID / Birth Certificate No</label>
-                            <input type="text" id="hrNid" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Passport No</label>
-                            <input type="text" id="hrPassport" class="form-control">
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer bg-light p-3">
-                <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary px-5 rounded-pill shadow-sm fw-bold">Register Staff</button>
+            <div class="modal-body">
+                <p class="text-muted text-center">Admin Only Form for NID, Bank A/C, Salary, etc.</p>
             </div>
         </div>
     </div>
