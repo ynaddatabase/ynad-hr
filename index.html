@@ -5,105 +5,210 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YNAD CONSTRUCTION - HR Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        .stat-box { background: #fff; border-radius: 10px; padding: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #eee; }
-        .holiday-row { background-color: #ffebee !important; color: #c62828; font-weight: bold; }
-        .header-bg { background-color: #2c3e50; color: white; padding: 30px 20px; border-radius: 0 0 25px 25px; margin-bottom: 30px; }
-        .card-custom { border-radius: 15px; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .btn-submit { background-color: #27ae60; color: white; font-weight: bold; border: none; }
-        .btn-submit:hover { background-color: #219150; }
-        .badge-present { background-color: #27ae60; }
-        .badge-outside { background-color: #2980b9; }
-        .badge-leave { background-color: #e74c3c; }
+        :root { --primary: #2c3e50; --secondary: #27ae60; --accent: #3498db; }
+        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; color: #333; }
+        
+        /* Header & Navigation */
+        .header-bg { background: linear-gradient(135deg, var(--primary), #1a252f); color: white; padding: 50px 0; border-radius: 0 0 40px 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); position: relative; }
+        
+        /* Floating Add Button */
+        .add-emp-btn { position: absolute; bottom: -30px; right: 50px; width: 65px; height: 65px; border-radius: 50%; background: var(--secondary); color: white; border: 5px solid white; font-size: 26px; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.2); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+        .add-emp-btn:hover { transform: translateY(-5px) scale(1.05); background: #219150; color: white; }
+
+        /* Card Designs */
+        .card-custom { border-radius: 20px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.05); background: white; padding: 30px; margin-bottom: 30px; }
+        .section-title { font-weight: 700; font-size: 1.25rem; margin-bottom: 25px; display: flex; align-items: center; }
+        .section-title i { margin-right: 12px; color: var(--accent); }
+
+        /* Form Styling */
+        .modal-content { border-radius: 25px; border: none; overflow: hidden; }
+        .modal-header { background: var(--primary); color: white; padding: 20px 30px; }
+        .form-label { font-size: 0.85rem; font-weight: 600; color: #555; margin-top: 10px; }
+        .form-control, .form-select { border-radius: 10px; border: 1px solid #ddd; padding: 10px 15px; }
+        .form-control:focus { box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); border-color: var(--accent); }
+
+        /* Table Styling */
+        .table { border-collapse: separate; border-spacing: 0 10px; }
+        .table thead th { border: none; background: #f8f9fa; color: #777; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; padding: 15px; }
+        .table tbody tr { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: 0.2s; }
+        .table tbody td { padding: 15px; vertical-align: middle; border: none; }
+        .table tbody tr:hover { transform: scale(1.01); background: #fafafa; }
     </style>
 </head>
-<body class="bg-light">
+<body>
 
-<div class="header-bg text-center shadow">
-    <h2 class="fw-bold">YNAD CONSTRUCTION</h2>
-    <p class="mb-0 opacity-75">Field Office - Monthly Official Working Report Automation</p>
+<div class="header-bg text-center">
+    <div class="container">
+        <h1 class="fw-bold display-5">YNAD CONSTRUCTION</h1>
+        <p class="lead opacity-75">Corporate Field Office & HR Portal</p>
+    </div>
+    <a href="#" class="add-emp-btn" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+        <i class="fas fa-plus"></i>
+    </a>
 </div>
 
-<div class="container">
-    <div class="card card-custom p-4 mb-4 shadow-sm" style="border-left: 5px solid #27ae60;">
-        <h5 class="mb-3 fw-bold text-success">Daily Report Submission</h5>
+<div class="container mt-5 mb-5">
+    
+    <div class="card card-custom border-start border-4 border-success">
+        <h5 class="section-title"><i class="fas fa-tasks"></i> Daily Working Report Submission</h5>
         <form id="entryForm">
             <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Employee Name</label>
+                    <select id="empSelect" class="form-select shadow-sm" required>
+                        <option value="">-- Choose From List --</option>
+                    </select>
+                </div>
                 <div class="col-md-3">
-                    <label class="form-label small fw-bold">Select Date</label>
+                    <label class="form-label">Report Date</label>
                     <input type="date" id="workDate" class="form-control shadow-sm" required>
                 </div>
                 <div class="col-md-5">
-                    <label class="form-label small fw-bold">Working Details</label>
-                    <input type="text" id="workDetails" class="form-control shadow-sm" placeholder="Write your work details here..." required>
+                    <label class="form-label">Work Description / Progress</label>
+                    <input type="text" id="workDetails" class="form-control shadow-sm" placeholder="Summarize your daily achievements..." required>
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold">Duty Status</label>
-                    <select id="workRemarks" class="form-select shadow-sm">
-                        <option value="Present">Normal Duty</option>
-                        <option value="Work on Outside">Work on Outside</option>
-                        <option value="Personal Leave">Personal Leave</option>
-                        <option value="Medical Leave">Medical Leave</option>
-                        <option value="Absent">Absent</option>
-                    </select>
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" id="submitBtn" class="btn btn-submit w-100 shadow-sm py-2">Submit Report</button>
+                <div class="col-12 text-end mt-3">
+                    <button type="submit" class="btn btn-success px-5 fw-bold shadow-sm">Submit To Records</button>
                 </div>
             </div>
         </form>
     </div>
 
-    <div class="card card-custom p-4 mb-4 shadow-sm">
-        <h5 class="mb-3 fw-bold text-primary">Filter & View Reports</h5>
-        <div class="row g-3">
+    <div class="card card-custom">
+        <h5 class="section-title"><i class="fas fa-database"></i> Monthly Official Records</h5>
+        <div class="row g-3 mb-4 bg-light p-3 rounded-4">
+            <div class="col-md-5">
+                <select id="filterEmp" class="form-select border-0 shadow-sm"></select>
+            </div>
             <div class="col-md-4">
-                <label class="form-label small fw-bold">Employee Name</label>
-                <select id="empSelect" class="form-select shadow-sm"></select>
+                <input type="month" id="filterMonth" class="form-control border-0 shadow-sm">
             </div>
             <div class="col-md-3">
-                <label class="form-label small fw-bold">From Date</label>
-                <input type="date" id="fromDate" class="form-control shadow-sm">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label small fw-bold">To Date</label>
-                <input type="date" id="toDate" class="form-control shadow-sm">
-            </div>
-            <div class="col-md-2 d-flex align-items-end">
-                <button onclick="fetchReports()" class="btn btn-primary w-100 shadow-sm fw-bold py-2">View Data</button>
+                <button class="btn btn-primary w-100 fw-bold shadow-sm">View Report</button>
             </div>
         </div>
-    </div>
-
-    <div class="row mb-4 g-3">
-        <div class="col-md-2 col-6"><div class="stat-box"><h6>Total Days</h6><h4 id="statWorking" class="fw-bold">0</h4></div></div>
-        <div class="col-md-2 col-6"><div class="stat-box text-success"><h6>Present</h6><h4 id="statPresent" class="fw-bold">0</h4></div></div>
-        <div class="col-md-2 col-6"><div class="stat-box text-primary"><h6>Outside</h6><h4 id="statOutside" class="fw-bold">0</h4></div></div>
-        <div class="col-md-2 col-6"><div class="stat-box text-danger"><h6>Leave</h6><h4 id="statLeave" class="fw-bold">0</h4></div></div>
-        <div class="col-md-2 col-6"><div class="stat-box text-warning"><h6>Holiday</h6><h4 id="statHoliday" class="fw-bold">0</h4></div></div>
-        <div class="col-md-2 col-6"><div class="stat-box bg-dark text-white"><h6>Absent</h6><h4 id="statAbsent" class="fw-bold">0</h4></div></div>
-    </div>
-
-    <div class="card card-custom shadow border-0 mb-5">
         <div class="table-responsive">
-            <table class="table table-hover mb-0 align-middle">
-                <thead class="table-dark">
+            <table class="table align-middle">
+                <thead>
                     <tr>
-                        <th class="ps-3">Date</th>
+                        <th>Date</th>
                         <th>Day</th>
-                        <th>Working Details</th>
-                        <th>Remarks</th>
+                        <th>Work Description</th>
+                        <th>Duty Status</th>
                     </tr>
                 </thead>
                 <tbody id="reportTableBody">
-                    <tr><td colspan="4" class="text-center p-5 text-muted">Select an employee and click "View Data"</td></tr>
-                </tbody>
+                    </tbody>
             </table>
         </div>
     </div>
 </div>
 
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold"><i class="fas fa-user-plus me-2"></i> Register New Staff Information</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="hrForm">
+                    <div class="row g-3">
+                        <div class="col-12"><h6 class="text-primary fw-bold border-bottom pb-2">Personal & Contact Details</h6></div>
+                        <div class="col-md-4">
+                            <label class="form-label">Employee Name</label>
+                            <input type="text" id="hrName" class="form-control" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">ID Number</label>
+                            <input type="text" id="hrEmpId" class="form-control" placeholder="Unique ID" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Blood Group</label>
+                            <select id="hrBG" class="form-select">
+                                <option value="">Select</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="O+">O+</option><option value="O-">O-</option><option value="AB+">AB+</option><option value="AB-">AB-</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Personal Phone</label>
+                            <input type="text" id="hrPhone" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Alternative Phone</label>
+                            <input type="text" id="hrAltPhone" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Personal Email</label>
+                            <input type="email" id="hrEmail" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Portfolio / Social Link</label>
+                            <input type="text" id="hrPortfolio" class="form-control">
+                        </div>
+
+                        <div class="col-12 mt-4"><h6 class="text-primary fw-bold border-bottom pb-2">Office & Professional Info</h6></div>
+                        <div class="col-md-2">
+                            <label class="form-label">Grade</label>
+                            <input type="text" id="hrGrade" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Post</label>
+                            <input type="text" id="hrPost" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Designation</label>
+                            <input type="text" id="hrDesignation" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Category of Office</label>
+                            <input type="text" id="hrCategory" class="form-control" placeholder="e.g. Field Office">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Education Qualification</label>
+                            <input type="text" id="hrEdu" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Date of Joining</label>
+                            <input type="date" id="hrJoinDate" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Work Duration (Contract)</label>
+                            <input type="text" id="hrDuration" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Current Salary</label>
+                            <input type="number" id="hrSalary" class="form-control">
+                        </div>
+
+                        <div class="col-12 mt-4"><h6 class="text-primary fw-bold border-bottom pb-2">Identification & Bank Details</h6></div>
+                        <div class="col-md-4">
+                            <label class="form-label">Bank A/C Number</label>
+                            <input type="text" id="hrBank" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">NID / Birth Certificate No</label>
+                            <input type="text" id="hrNid" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Passport No</label>
+                            <input type="text" id="hrPassport" class="form-control">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light p-3">
+                <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary px-5 rounded-pill shadow-sm fw-bold">Register Staff</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
