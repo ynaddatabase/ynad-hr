@@ -11,18 +11,13 @@
     <style>
         :root { --sidebar-bg: #2d3448; --accent: #4a90e2; --red-holiday: #d63031; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; display: flex; overflow: hidden; }
-        
-        /* Sidebar */
         .sidebar { width: 260px; height: 100vh; background: var(--sidebar-bg); position: fixed; color: white; padding: 25px; display: flex; flex-direction: column; z-index: 1000; }
         .nav-link { color: #94a3b8; padding: 12px 15px; border-radius: 12px; text-decoration: none; display: block; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
         .nav-link.active { background: rgba(255,255,255,0.1); color: white; font-weight: 600; }
-        .nav-link:hover { background: rgba(255,255,255,0.05); color: white; }
-
-        /* Main Content */
         .main-wrapper { margin-left: 260px; width: calc(100% - 260px); min-height: 100vh; display: flex; flex-direction: column; }
         .top-bar { padding: 15px 40px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-
-        /* On/Off Toggle Switch Style */
+        
+        /* Language Toggle Switch */
         .switch-container { display: flex; align-items: center; gap: 10px; }
         .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -31,19 +26,15 @@
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(22px); }
 
-        /* Pages */
         .page-content { display: none; padding: 40px; animation: fadeIn 0.3s ease; }
         .page-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Entry Card */
         .entry-card { background: white; border-radius: 20px; padding: 40px; border: 1px solid #e2e8f0; max-width: 900px; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         
         /* Holiday Red Logic */
         .holiday-red { color: var(--red-holiday) !important; border-color: var(--red-holiday) !important; background-color: #fff1f2 !important; font-weight: bold !important; }
         #holidayAlert { display: none; background: #fff1f2; color: var(--red-holiday); padding: 15px; border-radius: 12px; border: 1px solid #fecaca; text-align: center; font-weight: 700; margin-bottom: 25px; }
-
         .footer { margin-top: auto; padding: 20px; text-align: center; color: #94a3b8; font-size: 0.85rem; border-top: 1px solid #e2e8f0; background: white; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -57,7 +48,6 @@
             <a class="nav-link" onclick="showPage('yearlyPage', this)"><i class="fas fa-chart-bar me-3"></i> <span data-en="Yearly Summary" data-bn="বার্ষিক সারাংশ">Yearly Summary</span></a>
             <a class="nav-link" onclick="showPage('profilePage', this)"><i class="fas fa-user me-3"></i> <span data-en="My Profile" data-bn="আমার প্রোফাইল">My Profile</span></a>
         </nav>
-        <a class="nav-link text-danger mt-auto" onclick="location.reload()"><i class="fas fa-power-off me-3"></i> Logout</a>
     </div>
 
     <div class="main-wrapper">
@@ -70,7 +60,7 @@
                 </label>
                 <span class="small fw-bold text-muted">BN</span>
             </div>
-            <div class="text-end"><span class="fw-bold text-primary">April 2026</span></div>
+            <div class="text-end"><span id="topBarDate" class="fw-bold text-primary">01 Apr 2026</span></div>
         </div>
 
         <div id="entryPage" class="page-content active">
@@ -85,15 +75,16 @@
                     <div class="row g-4">
                         <div class="col-md-6">
                             <label class="form-label" data-en="SELECT DATE" data-bn="তারিখ নির্বাচন করুন">SELECT DATE</label>
-                            <input type="date" id="inputDate" class="form-control">
+                            <input type="date" id="hiddenDate" class="form-control mb-2">
+                            <input type="text" id="displayDate" class="form-control bg-light fw-bold" readonly>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" data-en="DAY OF WEEK" data-bn="সপ্তাহের দিন">DAY OF WEEK</label>
-                            <input type="text" id="inputDay" class="form-control bg-light fw-bold" readonly>
+                            <label class="form-label" data-en="DAY OF WEEK" data-bn="সপেক্ষের দিন">DAY OF WEEK</label>
+                            <input type="text" id="displayDay" class="form-control bg-light fw-bold" readonly>
                         </div>
                         <div class="col-12">
                             <label class="form-label" data-en="WORKING DETAILS *" data-bn="কাজের বিবরণ *">WORKING DETAILS *</label>
-                            <textarea id="workDetails" class="form-control" rows="4" required placeholder="..."></textarea>
+                            <textarea id="workDetails" class="form-control" rows="4"></textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label" data-en="REMARKS" data-bn="মন্তব্য">REMARKS</label>
@@ -110,8 +101,8 @@
                             </select>
                         </div>
                         <div class="col-12 d-flex justify-content-between mt-5">
-                            <button type="button" onclick="clearForm()" class="btn btn-outline-danger px-4 fw-bold" data-en="Clear All" data-bn="সব মুছুন">Clear All</button>
-                            <button type="submit" class="btn btn-dark px-5 py-3 fw-bold shadow" data-en="Save Daily Report" data-bn="রিপোর্ট সংরক্ষণ করুন">Save Daily Report</button>
+                            <button type="button" id="clearBtn" class="btn btn-outline-danger px-4 fw-bold" data-en="Clear All" data-bn="সব মুছুন">Clear All</button>
+                            <button type="submit" class="btn btn-dark px-5 py-3 fw-bold" data-en="Save Daily Report" data-bn="রিপোর্ট সংরক্ষণ করুন">Save Daily Report</button>
                         </div>
                     </div>
                 </form>
