@@ -17,12 +17,16 @@
         
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; display: flex; overflow: hidden; }
         
-        .lang-bn h2, .lang-bn .nav-link span, .lang-bn label, .lang-bn button:not(#clearBtn), .lang-bn .clear-text {
+        /* Language Specific Fonts */
+        .lang-bn h2, .lang-bn .nav-link span, .lang-bn label, .lang-bn .clear-text, .lang-bn .btn {
             font-family: 'Kalpurush', sans-serif !important;
         }
-        input, select, textarea, #topBarDate { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+        /* These stay in English Font always */
+        input, select, textarea, #topBarDate, .profile-id { 
+            font-family: 'Plus Jakarta Sans', sans-serif !important; 
+        }
 
-        /* Sidebar & Profile */
+        /* Sidebar & Profile Styling */
         .sidebar { width: 280px; height: 100vh; background: var(--sidebar-bg); position: fixed; color: white; padding: 20px; display: flex; flex-direction: column; z-index: 1000; }
         .profile-box { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
         .profile-img { width: 85px; height: 85px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 15px; object-fit: cover; }
@@ -32,11 +36,13 @@
 
         .nav-link { color: #94a3b8; padding: 12px 15px; border-radius: 12px; text-decoration: none; display: block; margin-bottom: 5px; cursor: pointer; transition: 0.3s; }
         .nav-link.active { background: rgba(255,255,255,0.1); color: white; font-weight: 600; }
+        .nav-link:hover { color: white; background: rgba(255,255,255,0.05); }
 
-        /* Layout */
+        /* Main Content Layout */
         .main-wrapper { margin-left: 280px; width: calc(100% - 280px); min-height: 100vh; display: flex; flex-direction: column; }
         .top-bar { padding: 15px 40px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
         
+        /* Lang Switch */
         .switch-container { display: flex; align-items: center; gap: 10px; }
         .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -53,12 +59,12 @@
         .holiday-red { color: var(--red-holiday) !important; border-color: var(--red-holiday) !important; background-color: #fff1f2 !important; font-weight: bold !important; }
         #holidayAlert { display: none; background: #fff1f2; color: var(--red-holiday); padding: 15px; border-radius: 12px; border: 1px solid #fecaca; text-align: center; font-weight: 700; margin-bottom: 25px; }
         
-        /* Clear Icon & Text */
-        .clear-container { display: flex; align-items: center; gap: 8px; cursor: pointer; color: #94a3b8; transition: 0.3s; padding: 10px; }
+        /* Smooth Clear All Animation */
+        .clear-container { display: flex; align-items: center; gap: 8px; cursor: pointer; color: #94a3b8; transition: 0.3s; padding: 10px; user-select: none; }
         .clear-container:hover { color: var(--red-holiday); }
-        .clear-container:hover i { transform: rotate(-90deg); }
+        .clear-container:hover #clearBtn i { transform: rotate(360deg); transition: transform 0.6s ease-in-out; }
         .clear-text { font-size: 0.95rem; font-weight: 600; }
-        #clearBtn { background: none; border: none; color: inherit; font-size: 1.4rem; padding: 0; }
+        #clearBtn { background: none; border: none; color: inherit; font-size: 1.4rem; padding: 0; display: flex; align-items: center; }
 
         /* Footer */
         .custom-footer { margin-top: auto; padding: 15px; background: white; border-top: 1px solid #e2e8f0; display: flex; justify-content: center; align-items: center; gap: 20px; font-size: 0.85rem; color: #64748b; }
@@ -116,7 +122,7 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-bold" data-en="WORKING DETAILS *" data-bn="কাজের বিবরণ *">WORKING DETAILS *</label>
-                            <textarea id="workDetails" class="form-control" rows="4"></textarea>
+                            <textarea id="workDetails" class="form-control" rows="4" placeholder="Enter work details here..."></textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-bold" data-en="REMARKS" data-bn="মন্তব্য">REMARKS</label>
@@ -144,7 +150,7 @@
             </div>
         </div>
 
-        <div id="reportsPage" class="page-content"><h2 data-en="My Submitted Reports" data-bn="আমার রিপোর্ট">My Submitted Reports</h2></div>
+        <div id="reportsPage" class="page-content"><h2 data-en="My Reports" data-bn="আমার রিপোর্ট">My Reports</h2></div>
         <div id="summaryPage" class="page-content"><h2 data-en="Monthly Summary" data-bn="মাসিক সারাংশ">Monthly Summary</h2></div>
         <div id="yearlyPage" class="page-content"><h2 data-en="Yearly Summary" data-bn="বার্ষিক সারাংশ">Yearly Summary</h2></div>
         <div id="profilePage" class="page-content"><h2 data-en="Profile Settings" data-bn="প্রোফাইল সেটিংস">Profile Settings</h2></div>
