@@ -14,9 +14,10 @@
             src: url('https://cdn.jsdelivr.net/gh/at-shabab/kalpurush-font@master/Kalpurush.ttf') format('truetype');
         }
         :root { --sidebar-bg: #2d3448; --accent: #4a90e2; --red-holiday: #d63031; }
+        
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; display: flex; overflow: hidden; }
         
-        .lang-bn h2, .lang-bn .nav-link span, .lang-bn label, .lang-bn button:not(#clearBtn) {
+        .lang-bn h2, .lang-bn .nav-link span, .lang-bn label, .lang-bn button:not(#clearBtn), .lang-bn .clear-text {
             font-family: 'Kalpurush', sans-serif !important;
         }
         input, select, textarea, #topBarDate { font-family: 'Plus Jakarta Sans', sans-serif !important; }
@@ -31,11 +32,11 @@
 
         .nav-link { color: #94a3b8; padding: 12px 15px; border-radius: 12px; text-decoration: none; display: block; margin-bottom: 5px; cursor: pointer; transition: 0.3s; }
         .nav-link.active { background: rgba(255,255,255,0.1); color: white; font-weight: 600; }
-        .nav-link:hover { color: white; background: rgba(255,255,255,0.05); }
 
-        /* Main Content */
+        /* Layout */
         .main-wrapper { margin-left: 280px; width: calc(100% - 280px); min-height: 100vh; display: flex; flex-direction: column; }
         .top-bar { padding: 15px 40px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        
         .switch-container { display: flex; align-items: center; gap: 10px; }
         .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -52,9 +53,12 @@
         .holiday-red { color: var(--red-holiday) !important; border-color: var(--red-holiday) !important; background-color: #fff1f2 !important; font-weight: bold !important; }
         #holidayAlert { display: none; background: #fff1f2; color: var(--red-holiday); padding: 15px; border-radius: 12px; border: 1px solid #fecaca; text-align: center; font-weight: 700; margin-bottom: 25px; }
         
-        /* Clear Icon Styling */
-        #clearBtn { background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; transition: 0.3s; padding: 10px; display: flex; align-items: center; justify-content: center; }
-        #clearBtn:hover { color: var(--red-holiday); transform: rotate(-90deg); }
+        /* Clear Icon & Text */
+        .clear-container { display: flex; align-items: center; gap: 8px; cursor: pointer; color: #94a3b8; transition: 0.3s; padding: 10px; }
+        .clear-container:hover { color: var(--red-holiday); }
+        .clear-container:hover i { transform: rotate(-90deg); }
+        .clear-text { font-size: 0.95rem; font-weight: 600; }
+        #clearBtn { background: none; border: none; color: inherit; font-size: 1.4rem; padding: 0; }
 
         /* Footer */
         .custom-footer { margin-top: auto; padding: 15px; background: white; border-top: 1px solid #e2e8f0; display: flex; justify-content: center; align-items: center; gap: 20px; font-size: 0.85rem; color: #64748b; }
@@ -69,7 +73,7 @@
         <h4 class="fw-bold mb-3 px-2">YNAD <span style="font-size: 0.6em; color: #94a3b8;">CONSTRUCTION</span></h4>
         <div class="profile-box">
             <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="profile-img" alt="User">
-            <div class="profile-name">Md. Abu Sayeed</div>
+            <div class="profile-name">Engr. Abdul Alim</div>
             <div class="profile-desc">Senior Site Engineer</div>
             <div class="profile-id">ID: 0101001</div>
         </div>
@@ -112,11 +116,11 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-bold" data-en="WORKING DETAILS *" data-bn="কাজের বিবরণ *">WORKING DETAILS *</label>
-                            <textarea id="workDetails" class="form-control" rows="4" placeholder="Type your work details..."></textarea>
+                            <textarea id="workDetails" class="form-control" rows="4"></textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-bold" data-en="REMARKS" data-bn="মন্তব্য">REMARKS</label>
-                            <select id="workRemarks" class="form-select fw-bold" style="opacity: 0.6;">
+                            <select id="workRemarks" class="form-select fw-bold">
                                 <option value="" selected>Select</option>
                                 <option value="Work on Outside">Work on Outside</option>
                                 <option value="Personal Leave">Personal Leave</option>
@@ -128,8 +132,11 @@
                                 <option value="Absent">Absent</option>
                             </select>
                         </div>
-                        <div class="col-12 d-flex justify-content-end align-items: center; mt-5 gap-3">
-                            <button type="button" id="clearBtn" title="Clear All"><i class="fas fa-sync-alt"></i></button>
+                        <div class="col-12 d-flex justify-content-end align-items-center mt-5 gap-3">
+                            <div class="clear-container" id="clearBtnTrigger">
+                                <span class="clear-text" data-en="Clear All" data-bn="সব মুছুন">Clear All</span>
+                                <button type="button" id="clearBtn"><i class="fas fa-sync-alt"></i></button>
+                            </div>
                             <button type="submit" class="btn btn-dark px-5 py-3 fw-bold shadow" data-en="Save Daily Report" data-bn="রিপোর্ট সংরক্ষণ করুন">Save Daily Report</button>
                         </div>
                     </div>
@@ -137,17 +144,12 @@
             </div>
         </div>
 
-        <div id="reportsPage" class="page-content">
-            <h2 data-en="My Submitted Reports" data-bn="আমার দাখিলকৃত রিপোর্ট">My Submitted Reports</h2>
-            <p class="text-muted">No reports found for this month.</p>
-        </div>
-        <div id="summaryPage" class="page-content"><h2 data-en="Monthly Summary View" data-bn="মাসিক সারাংশ ভিউ">Monthly Summary View</h2></div>
-        <div id="yearlyPage" class="page-content"><h2 data-en="Yearly Analytics" data-bn="বার্ষিক বিশ্লেষণ">Yearly Analytics</h2></div>
-        <div id="profilePage" class="page-content"><h2 data-en="User Profile Settings" data-bn="প্রোফাইল সেটিংস">User Profile Settings</h2></div>
+        <div id="reportsPage" class="page-content"><h2 data-en="My Submitted Reports" data-bn="আমার রিপোর্ট">My Submitted Reports</h2></div>
+        <div id="summaryPage" class="page-content"><h2 data-en="Monthly Summary" data-bn="মাসিক সারাংশ">Monthly Summary</h2></div>
+        <div id="yearlyPage" class="page-content"><h2 data-en="Yearly Summary" data-bn="বার্ষিক সারাংশ">Yearly Summary</h2></div>
+        <div id="profilePage" class="page-content"><h2 data-en="Profile Settings" data-bn="প্রোফাইল সেটিংস">Profile Settings</h2></div>
 
         <div class="custom-footer">
-            <span class="fw-bold" style="color: var(--sidebar-bg);">YNAD CONSTRUCTION</span>
-            <div class="footer-sep"></div>
             <span>ERP Portal v2.0</span>
             <div class="footer-sep"></div>
             <span>© 2026 Developed by Md. Abu Sayeed</span>
