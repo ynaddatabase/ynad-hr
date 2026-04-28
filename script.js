@@ -1,59 +1,75 @@
-// ১. পেজ পরিবর্তন করার ফাংশন
-function showPage(pageId, element) {
-    // সব পেজ হাইড করা
-    const pages = document.querySelectorAll('.page-content');
-    pages.forEach(page => page.classList.remove('active'));
+function showPage(pageId, el) {
+    document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    el.classList.add('active');
+}
 
-    // সিলেক্ট করা পেজ শো করা
-    const activePage = document.getElementById(pageId);
-    if (activePage) activePage.classList.add('active');
+// ক্লিয়ার বাটন লজিক
+function clearForm() {
+    document.getElementById('reportForm').reset();
+    setDefaultDate();
+}
 
-    // সাইডবার মেনু হাইলাইট পরিবর্তন
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => link.classList.remove('active'));
-    element.classList.add('active');
+// তারিখ সেটআপ ফাংশন
+function setDefaultDate() {
+    const today = new Date();
+    const offset = today.getTimezoneOffset() * 60000;
+    const localToday = (new Date(today - offset)).toISOString().split('T')[0];
+    
+    const dateInput = document.getElementById('inputDate');
+    dateInput.value = localToday;
+    dateInput.max = localToday;
+    updateDayLogic(localToday);
+}
+
+function updateDayLogic(dateStr) {
+    if (!dateStr) return;
+    const d = new Date(dateStr);
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const dayName = dayNames[d.getDay()];
+    
+    const dayInput = document.getElementById('inputDay');
+    const dateInput = document.getElementById('inputDate');
+    const alertBox = document.getElementById('holidayAlert');
+
+    dayInput.value = dayName;
+
+    if (dayName === "Friday") {
+        dateInput.classList.add('holiday-red');
+        dayInput.classList.add('holiday-red');
+        alertBox.style.display = 'block';
+    } else {
+        dateInput.classList.remove('holiday-red');
+        dayInput.classList.remove('holiday-red');
+        alertBox.style.display = 'none';
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const dateInput = document.getElementById('inputDate');
-    const dayInput = document.getElementById('inputDay');
-    const holidayAlert = document.getElementById('holidayAlert');
+    setDefaultDate();
+    document.getElementById('inputDate').addEventListener('change', (e) => updateDayLogic(e.target.value));
 
-    // ২. আজকের তারিখ ডিফল্ট সেট করা
-    const today = new Date();
-    const offset = today.getTimezoneOffset() * 60000;
-    const localDate = (new Date(today - offset)).toISOString().split('T')[0];
-    
-    dateInput.value = localDate; 
-    dateInput.max = localDate; // ভবিষ্যৎ এডিট বন্ধ
-
-    function updateLogic(selectedDate) {
-        if (!selectedDate) return;
-        
-        const dateObj = new Date(selectedDate);
-        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        const dayName = dayNames[dateObj.getDay()];
-        
-        dayInput.value = dayName;
-
-        // ৩. শুক্রবার লাল হওয়ার লজিক
-        if (dayName === "Friday") {
-            dateInput.classList.add('holiday-red');
-            dayInput.classList.add('holiday-red');
-            holidayAlert.style.display = 'block';
-        } else {
-            dateInput.classList.remove('holiday-red');
-            dayInput.classList.remove('holiday-red');
-            holidayAlert.style.display = 'none';
-        }
-    }
-
-    // শুরুতে এবং তারিখ পরিবর্তনের সময় রান হবে
-    updateLogic(localDate);
-    dateInput.addEventListener('change', (e) => updateLogic(e.target.value));
-
-    // ল্যাঙ্গুয়েজ সুইচ বাটন
-    document.getElementById('langToggle').addEventListener('click', function() {
-        this.innerText = this.innerText.includes("EN") ? "বাংলা | EN" : "EN | বাংলা";
+    // এ টু জেড ল্যাঙ্গুয়েজ সুইচ (Toggle logic)
+    document.getElementById('langSwitch').addEventListener('change', function() {
+        const isBN = this.checked;
+        document.querySelectorAll('[data-en]').forEach(el => {
+            // ১. শুধু টেক্সট আছে এমন এলিমেন্ট
+            if(el.children.length === 0) {
+                el.innerText = isBN ? el.getAttribute('data-bn') : el.getAttribute('data-en');
+            } 
+            // ২. ড্রপডাউন অপশনের জন্য
+            else if(el.tagName === 'OPTION') {
+                el.text = isBN ? el.getAttribute('data-bn') : el.getAttribute('data-en');
+            }
+            // ৩. টেক্সট নোডসহ এলিমেন্ট (যেমন সাইডবার মেনু)
+            else {
+                el.childNodes.forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== "") {
+                        node.textContent = isBN ? el.getAttribute('data-bn') : el.getAttribute('data-en');
+                    }
+                });
+            }
+        });
     });
 });
