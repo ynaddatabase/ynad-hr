@@ -1,49 +1,93 @@
 document.addEventListener('DOMContentLoaded', () => {
     const dateInput = document.getElementById('entryDate');
     const dayInput = document.getElementById('entryDay');
+    const holidayMsg = document.getElementById('holidayMsg');
 
-    // ১. আজকের তারিখ বের করা
+    // ১. ডেট সেটআপ ও লক করা
     const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    const todayString = `${yyyy}-${mm}-${dd}`;
+    const todayStr = today.toISOString().split('T')[0];
+    dateInput.max = todayStr;
+    dateInput.value = todayStr;
 
-    // ২. ভবিষ্যৎ তারিখ লক করা (max attribute ব্যবহার করে)
-    dateInput.max = todayString;
-    dateInput.value = todayString; // ডিফল্টভাবে আজকের তারিখ
+    const checkHoliday = (dateString) => {
+        const d = new Date(dateString);
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const dayName = dayNames[d.getDay()];
+        
+        dayInput.value = dayName;
 
-    // ৩. বারের নাম আপডেট করার ফাংশন
-    const updateDay = (dateStr) => {
-        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        const d = new Date(dateStr);
-        dayInput.value = days[d.getDay()];
+        // ২. শুক্রবার চেক (Weekly Holiday)
+        if (dayName === "Friday") {
+            dayInput.classList.add('text-holiday');
+            dateInput.classList.add('text-holiday');
+            holidayMsg.style.display = 'block';
+        } else {
+            dayInput.classList.remove('text-holiday');
+            dateInput.classList.remove('text-holiday');
+            holidayMsg.style.display = 'none';
+        }
     };
 
-    // শুরুতে আজকের বার সেট করা
-    updateDay(todayString);
+    checkHoliday(todayStr);
 
-    // তারিখ পরিবর্তন করলে বার আপডেট হবে
     dateInput.addEventListener('change', (e) => {
-        updateDay(e.target.value);
+        checkHoliday(e.target.value);
     });
 
-    // ৪. ফর্ম সাবমিশন
-    document.getElementById('dailyReportForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const data = {
-            date: dateInput.value,
-            day: dayInput.value,
-            details: document.getElementById('workDetails').value,
-            remarks: document.getElementById('workRemarks').value
-        };
-
-        console.log("Submitting Data:", data);
-        alert("Report Submitted Successfully for " + data.date);
-        
-        // ফর্ম ক্লিয়ার (শুধু ডিটেইলস এবং রিমার্কস)
-        document.getElementById('workDetails').value = "";
-        document.getElementById('workRemarks').value = "";
+    // ৩. ল্যাঙ্গুয়েজ সুইচ (বুনিয়াদি লজিক)
+    let currentLang = 'EN';
+    document.getElementById('langToggle').addEventListener('click', function() {
+        currentLang = currentLang === 'EN' ? 'BN' : 'EN';
+        this.innerText = currentLang === 'EN' ? 'EN | BN' : 'বাংলা | EN';
+        alert("Language switched to: " + currentLang);
+        // এখানে আপনি ডাটাবেস বা ডিকশনারি থেকে টেক্সট চেঞ্জ করার লজিক দিতে পারেন
     });
 });
+
+function logout() { location.reload(); }document.addEventListener('DOMContentLoaded', () => {
+    const dateInput = document.getElementById('entryDate');
+    const dayInput = document.getElementById('entryDay');
+    const holidayMsg = document.getElementById('holidayMsg');
+
+    // ১. ডেট সেটআপ ও লক করা
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    dateInput.max = todayStr;
+    dateInput.value = todayStr;
+
+    const checkHoliday = (dateString) => {
+        const d = new Date(dateString);
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const dayName = dayNames[d.getDay()];
+        
+        dayInput.value = dayName;
+
+        // ২. শুক্রবার চেক (Weekly Holiday)
+        if (dayName === "Friday") {
+            dayInput.classList.add('text-holiday');
+            dateInput.classList.add('text-holiday');
+            holidayMsg.style.display = 'block';
+        } else {
+            dayInput.classList.remove('text-holiday');
+            dateInput.classList.remove('text-holiday');
+            holidayMsg.style.display = 'none';
+        }
+    };
+
+    checkHoliday(todayStr);
+
+    dateInput.addEventListener('change', (e) => {
+        checkHoliday(e.target.value);
+    });
+
+    // ৩. ল্যাঙ্গুয়েজ সুইচ (বুনিয়াদি লজিক)
+    let currentLang = 'EN';
+    document.getElementById('langToggle').addEventListener('click', function() {
+        currentLang = currentLang === 'EN' ? 'BN' : 'EN';
+        this.innerText = currentLang === 'EN' ? 'EN | BN' : 'বাংলা | EN';
+        alert("Language switched to: " + currentLang);
+        // এখানে আপনি ডাটাবেস বা ডিকশনারি থেকে টেক্সট চেঞ্জ করার লজিক দিতে পারেন
+    });
+});
+
+function logout() { location.reload(); }
