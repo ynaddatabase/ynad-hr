@@ -1,80 +1,50 @@
-// ১. ইউজার ডাটা (অফিস টাইপসহ)
-const users = [
-    { 
-        id: 'admin', 
-        pin: '1234', 
-        name: 'Engr. Abdul Alim', 
-        role: 'admin', 
-        designation: 'Sr. Site Engineer',
-        office: 'Dhaka Office',
-        photo: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' 
-    },
-    { 
-        id: '2511022', 
-        pin: '5566', 
-        name: 'Md. Abu Sayeed', 
-        role: 'employee', 
-        designation: 'Project Engineer',
-        office: 'Field Office',
-        photo: 'https://cdn-icons-png.flaticon.com/512/3135/3135768.png' 
-    }
-];
+// ১. পেজ লোড হওয়ার সময় ডিফল্ট সেটআপ
+document.addEventListener('DOMContentLoaded', () => {
+    const dateInput = document.getElementById('entryDate');
+    const dayInput = document.getElementById('entryDay');
 
-// ২. লগইন ফাংশন
-function attemptLogin() {
-    const idVal = document.getElementById('loginId').value;
-    const pinVal = document.getElementById('loginPin').value;
-    const errorMsg = document.getElementById('loginError');
+    // আজকের তারিখ বের করা
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0];
 
-    const user = users.find(u => u.id === idVal && u.pin === pinVal);
+    // তারিখের সর্বোচ্চ সীমা আজকের দিন পর্যন্ত সেট করা (ভবিষ্যৎ লক)
+    dateInput.max = formattedDate;
+    dateInput.value = formattedDate;
 
-    if (user) {
-        errorMsg.classList.add('hidden');
-        showWelcomeSplash(user);
-    } else {
-        errorMsg.classList.remove('hidden');
-    }
+    // ডিফল্ট "Day" সেট করা
+    updateDayName(today);
+
+    // তারিখ পরিবর্তন করলে "Day" অটো আপডেট হবে
+    dateInput.addEventListener('change', (e) => {
+        const selectedDate = new Date(e.target.value);
+        updateDayName(selectedDate);
+    });
+});
+
+// ২. তারিখ অনুযায়ী বারের নাম (Saturday, Sunday...) বের করা
+function updateDayName(dateObj) {
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const dayName = dayNames[dateObj.getDay()];
+    document.getElementById('entryDay').value = dayName;
 }
 
-// ৩. স্প্ল্যাশ স্ক্রিন পপ-আপ
-function showWelcomeSplash(user) {
-    document.getElementById('welcomeName').innerText = user.name;
-    document.getElementById('welcomeID').innerText = `ID: ${user.id}`;
-    document.getElementById('welcomePhoto').src = user.photo;
+// ৩. ফর্ম সাবমিশন হ্যান্ডলার
+document.getElementById('dailyReportForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const reportData = {
+        date: document.getElementById('entryDate').value,
+        day: document.getElementById('entryDay').value,
+        details: document.getElementById('workDetails').value,
+        remarks: document.getElementById('workRemarks').value
+    };
+
+    console.log("Saving Report:", reportData);
+
+    // এখানে আমরা সুপাবেস কানেক্ট করবো। আপাতত একটি সাকসেস মেসেজ দিচ্ছি।
+    alert(`Report for ${reportData.date} submitted successfully!`);
     
-    const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
-    welcomeModal.show();
-
-    setTimeout(() => {
-        welcomeModal.hide();
-        document.getElementById('loginOverlay').classList.add('hidden');
-        document.getElementById('mainContent').classList.remove('hidden');
-        setupDashboard(user);
-    }, 3000);
-}
-
-// ৪. ড্যাশবোর্ড হেডার ও ইন্টারফেস সেটআপ
-function setupDashboard(user) {
-    // হেডার ইনফো
-    document.getElementById('userName').innerText = user.name;
-    document.getElementById('userDesig').innerText = user.designation;
-    document.getElementById('userID').innerText = user.id;
-    document.getElementById('userPhoto').src = user.photo;
-    
-    // অফিস ট্যাগ ও টাইটেল
-    document.getElementById('officeTag').innerText = user.office;
-    document.getElementById('officeReportTitle').innerText = `- ${user.office} -`;
-
-    // বর্তমান তারিখ
-    const now = new Date();
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    document.getElementById('currentMonthDisplay').innerText = months[now.getMonth()];
-    document.getElementById('currentYearDisplay').innerText = now.getFullYear();
-
-    // রোল অনুযায়ী কন্টেন্ট (ভবিষ্যতের এন্ট্রি টেবিল এখানে আসবে)
-    console.log(`${user.role} interface loaded.`);
-}
-
-function logout() {
-    location.reload();
-}
+    // ফর্ম ক্লিয়ার করা (তারিখ বাদে)
+    document.getElementById('workDetails').value = "";
+    document.getElementById('workRemarks').value = "";
+});
