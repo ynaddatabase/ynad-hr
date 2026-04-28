@@ -7,44 +7,46 @@ function toBnNum(num) {
     return num.toString().replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
 }
 
-function formatDate(dateStr, lang) {
-    const d = new Date(dateStr);
+function updateUI() {
+    const isBN = document.getElementById('langSwitch').checked;
+    const lang = isBN ? 'bn' : 'en';
+    const dateInput = document.getElementById('mainDateInput');
+    const val = dateInput.value;
+    
+    if(!val) return;
+    const d = new Date(val);
+
+    // ১. ক্যালেন্ডার আপডেট ও ফন্ট পরিবর্তন
+    if(isBN) document.documentElement.classList.add('lang-bn');
+    else document.documentElement.classList.remove('lang-bn');
+
+    // ২. সপক্ষের দিন আপডেট
+    document.getElementById('displayDay').value = isBN ? bnDays[d.getDay()] : enDays[d.getDay()];
+
+    // ৩. টপ বার তারিখ আপডেট
     const day = d.getDate();
     const month = d.getMonth();
     const year = d.getFullYear();
-    
-    if (lang === 'bn') {
-        return `${toBnNum(day < 10 ? '0'+day : day)} ${bnMonths[month]} ${toBnNum(year)}`;
-    }
-    return `${day < 10 ? '0'+day : day} ${enMonths[month]} ${year}`;
-}
+    const formattedDate = isBN 
+        ? `${toBnNum(day < 10 ? '0'+day : day)} ${bnMonths[month]} ${toBnNum(year)}`
+        : `${day < 10 ? '0'+day : day} ${enMonths[month]} ${year}`;
+    document.getElementById('topBarDate').innerText = formattedDate;
 
-function updateUI() {
-    const lang = document.getElementById('langSwitch').checked ? 'bn' : 'en';
-    const dateVal = document.getElementById('hiddenDate').value;
-    const d = new Date(dateVal);
-    
-    // ১. তারিখ ও দিনের ফরম্যাট আপডেট
-    document.getElementById('displayDate').value = formatDate(dateVal, lang);
-    document.getElementById('displayDay').value = lang === 'bn' ? bnDays[d.getDay()] : enDays[d.getDay()];
-    document.getElementById('topBarDate').innerText = formatDate(dateVal, lang);
-
-    // ২. শুক্রবার চেক
-    const isFriday = enDays[d.getDay()] === "Friday";
+    // ৪. শুক্রবার চেক
     const alertBox = document.getElementById('holidayAlert');
-    const inputs = [document.getElementById('displayDate'), document.getElementById('displayDay')];
-    
-    if(isFriday) {
-        inputs.forEach(i => i.classList.add('holiday-red'));
+    if(enDays[d.getDay()] === "Friday") {
+        dateInput.classList.add('holiday-red');
+        document.getElementById('displayDay').classList.add('holiday-red');
         alertBox.style.display = 'block';
     } else {
-        inputs.forEach(i => i.classList.remove('holiday-red'));
+        dateInput.classList.remove('holiday-red');
+        document.getElementById('displayDay').classList.remove('holiday-red');
         alertBox.style.display = 'none';
     }
 
-    // ৩. সব টেক্সট ট্রান্সলেশন
+    // ৫. এ টু জেড ট্রান্সলেশন
     document.querySelectorAll('[data-en]').forEach(el => {
-        const text = lang === 'bn' ? el.getAttribute('data-bn') : el.getAttribute('data-en');
+        const text = isBN ? el.getAttribute('data-bn') : el.getAttribute('data-en');
         if(el.tagName === 'OPTION') el.text = text;
         else if(el.children.length === 0) el.innerText = text;
         else {
@@ -52,10 +54,8 @@ function updateUI() {
         }
     });
 
-    // ৪. ব্রাউজারে ডাটা সেভ রাখা (Persistence)
+    // ডাটা সেভ রাখা
     localStorage.setItem('ynad_lang', lang);
-    localStorage.setItem('ynad_details', document.getElementById('workDetails').value);
-    localStorage.setItem('ynad_remarks', document.getElementById('workRemarks').value);
 }
 
 function showPage(id, el) {
@@ -66,31 +66,24 @@ function showPage(id, el) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const hiddenDate = document.getElementById('hiddenDate');
-    const workDetails = document.getElementById('workDetails');
-    const workRemarks = document.getElementById('workRemarks');
+    const dateInput = document.getElementById('mainDateInput');
     const langSwitch = document.getElementById('langSwitch');
 
     // আজকের তারিখ ডিফল্ট
     const today = new Date().toISOString().split('T')[0];
-    hiddenDate.value = today;
-    hiddenDate.max = today;
+    dateInput.value = today;
+    dateInput.max = today;
 
-    // ৫. রিলোড দিলে আগের ডাটা ফিরিয়ে আনা
+    // লোড করার সময় আগের ল্যাঙ্গুয়েজ ফিরে আনা
     if(localStorage.getItem('ynad_lang') === 'bn') langSwitch.checked = true;
-    if(localStorage.getItem('ynad_details')) workDetails.value = localStorage.getItem('ynad_details');
-    if(localStorage.getItem('ynad_remarks')) workRemarks.value = localStorage.getItem('ynad_remarks');
 
     updateUI();
 
-    // ইভেন্ট লিসেনারস
-    hiddenDate.addEventListener('change', updateUI);
+    dateInput.addEventListener('change', updateUI);
     langSwitch.addEventListener('change', updateUI);
-    workDetails.addEventListener('input', updateUI);
-    workRemarks.addEventListener('change', updateUI);
     
     document.getElementById('clearBtn').addEventListener('click', () => {
-        localStorage.clear();
-        location.reload();
+        document.getElementById('workDetails').value = '';
+        document.getElementById('workRemarks').selectedIndex = 0;
     });
 });
