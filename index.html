@@ -1,71 +1,88 @@
-<main class="container mt-4">
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <div class="card-header bg-primary text-white p-3 border-0">
-            <h5 class="mb-0 fw-bold"><i class="fas fa-edit me-2"></i> Daily Work Entry</h5>
-        </div>
-        <div class="card-body p-4 bg-white">
-            <form id="dailyReportForm">
-                <div class="row g-4">
-                    <div class="col-md-3">
-                        <label class="form-label small fw-bold text-muted">Select Date</label>
-                        <input type="date" id="entryDate" class="form-control p-3 border-light-subtle bg-light shadow-sm rounded-3" required>
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label small fw-bold text-muted">Day</label>
-                        <input type="text" id="entryDay" class="form-control p-3 bg-white border-0 fw-bold text-primary" readonly value="Today">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label small fw-bold text-muted">Working Details</label>
-                        <input type="text" id="workDetails" class="form-control p-3 border-light-subtle shadow-sm rounded-3" placeholder="Describe your task today..." required>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label small fw-bold text-muted">Remarks / Status</label>
-                        <select id="workRemarks" class="form-select p-3 border-light-subtle shadow-sm rounded-3" required>
-                            <option value="" selected disabled>Select Status</option>
-                            <option value="Present">Regular Work (Present)</option>
-                            <option value="Work on Outside">Work on Outside</option>
-                            <option value="Personal Leave">Personal Leave</option>
-                            <option value="Medical Leave">Medical Leave</option>
-                            <option value="Special Leave">Special Leave</option>
-                            <option value="Marital Leave">Marital Leave</option>
-                            <option value="Parental Leave">Parental Leave</option>
-                            <option value="Non-Pay Leave">Non-Pay Leave</option>
-                            <option value="Absent">Absent</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 text-end mt-4">
-                        <button type="submit" class="btn btn-primary px-5 py-3 fw-bold rounded-pill shadow">
-                            <i class="fas fa-paper-plane me-2"></i> Submit Today's Report
-                        </button>
-                    </div>
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-edit me-2"></i> Daily Work Entry Panel</h5>
                 </div>
-            </form>
-        </div>
-    </div>
+                <div class="card-body p-4 bg-white">
+                    <form id="dailyReportForm">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold text-muted small">Select Date</label>
+                                <input type="date" id="entryDate" class="form-control custom-input" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold text-muted small">Day</label>
+                                <input type="text" id="entryDay" class="form-control custom-input bg-light fw-bold" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small">Remarks / Status</label>
+                                <select id="workRemarks" class="form-select custom-input" required>
+                                    <option value="" selected disabled>Choose Status...</option>
+                                    <option value="Present">Present (Regular Work)</option>
+                                    <option value="Work on Outside">Work on Outside</option>
+                                    <option value="Personal Leave">Personal Leave</option>
+                                    <option value="Medical Leave">Medical Leave</option>
+                                    <option value="Special Leave">Special Leave</option>
+                                    <option value="Marital Leave">Marital Leave</option>
+                                    <option value="Parental Leave">Parental Leave</option>
+                                    <option value="Non-Pay Leave">Non-Pay Leave</option>
+                                    <option value="Absent">Absent</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-muted small">Working Details</label>
+                                <textarea id="workDetails" class="form-control custom-input" rows="3" placeholder="Enter your work description here..." required></textarea>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-pill">
+                                    <i class="fas fa-save me-2"></i> Submit Today's Report
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-    <div class="mt-5 mb-5">
-        <h6 class="fw-bold text-muted mb-3"><i class="fas fa-history me-2"></i> Recent Submission Overview</h6>
-        <div class="table-responsive rounded-4 shadow-sm bg-white">
-            <table class="table align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th class="p-3">Date</th>
-                        <th>Day</th>
-                        <th>Working Details</th>
-                        <th>Remarks</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="recentEntriesBody">
-                    <tr>
-                        <td colspan="5" class="text-center py-4 text-muted small">Your recent submissions will appear here after saving.</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="mt-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold"><i class="fas fa-list me-2"></i> Recent Submission Overview</h6>
+                    <span class="badge bg-info">Updated Live</span>
+                </div>
+                <div class="table-responsive shadow-sm rounded-3">
+                    <table class="table table-hover align-middle mb-0 bg-white">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="ps-3">Date</th>
+                                <th>Day</th>
+                                <th style="width: 40%;">Working Details</th>
+                                <th>Remarks</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentEntriesBody" class="small">
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">No reports submitted yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </main>
+
+<style>
+    .custom-input {
+        border: 1px solid #dee2e6;
+        padding: 12px;
+        border-radius: 8px;
+        transition: 0.3s;
+    }
+    .custom-input:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+    .table-dark { background-color: #2c3e50 !important; }
+</style>
