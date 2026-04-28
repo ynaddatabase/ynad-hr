@@ -3,35 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YNAD Portal | Daily Entry</title>
+    <title>YNAD Construction Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
         :root { --sidebar-bg: #2d3448; --accent: #4a90e2; --red-holiday: #d63031; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; display: flex; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; display: flex; overflow-x: hidden; }
         
-        /* Sidebar */
-        .sidebar { width: 260px; height: 100vh; background: var(--sidebar-bg); position: fixed; color: white; padding: 25px; display: flex; flex-direction: column; }
-        .nav-link { color: #94a3b8; padding: 12px 15px; border-radius: 10px; text-decoration: none; display: block; margin-bottom: 5px; transition: 0.3s; }
-        .nav-link.active { background: rgba(255,255,255,0.1); color: white; }
+        /* Sidebar Styling */
+        .sidebar { width: 260px; height: 100vh; background: var(--sidebar-bg); position: fixed; color: white; padding: 25px; display: flex; flex-direction: column; z-index: 1000; }
+        .nav-link { color: #94a3b8; padding: 12px 15px; border-radius: 12px; text-decoration: none; display: block; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
+        .nav-link.active { background: rgba(255,255,255,0.1); color: white; font-weight: 600; }
         .nav-link:hover { background: rgba(255,255,255,0.05); color: white; }
 
-        /* Main Wrapper */
+        /* Main Content Wrapper */
         .main-wrapper { margin-left: 260px; width: calc(100% - 260px); min-height: 100vh; display: flex; flex-direction: column; }
         .top-bar { padding: 15px 40px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
 
-        /* Header */
-        .header-section { text-align: center; padding: 40px 20px 20px; }
-        .title-main { font-size: 2.2rem; font-weight: 800; color: #0f172a; margin-bottom: 5px; }
+        /* Page Content Control */
+        .page-content { display: none; padding: 40px; animation: fadeIn 0.4s ease; }
+        .page-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Header Text */
+        .header-section { text-align: center; margin-bottom: 35px; }
+        .title-main { font-size: 2.2rem; font-weight: 800; color: #0f172a; text-transform: uppercase; }
         .title-sub { font-size: 1.1rem; color: #64748b; font-weight: 600; }
 
-        /* Entry Card */
-        .entry-card { background: white; border-radius: 20px; padding: 40px; border: 1px solid #e2e8f0; max-width: 900px; margin: 0 auto; width: 100%; }
+        /* Form Card Styling */
+        .entry-card { background: white; border-radius: 24px; padding: 45px; border: 1px solid #e2e8f0; max-width: 900px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .form-label { font-size: 0.85rem; font-weight: 700; color: #475569; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .form-control, .form-select { border-radius: 12px; padding: 14px; border: 1px solid #cbd5e1; font-size: 0.95rem; }
         
-        /* Input Red Logic */
-        .holiday-mode { color: var(--red-holiday) !important; border-color: var(--red-holiday) !important; background-color: #fff1f2 !important; font-weight: bold !important; }
+        /* Friday Holiday Logic */
+        .holiday-red { color: var(--red-holiday) !important; border-color: var(--red-holiday) !important; background-color: #fff1f2 !important; font-weight: bold !important; }
         #holidayAlert { display: none; background: #fff1f2; color: var(--red-holiday); padding: 15px; border-radius: 12px; border: 1px solid #fecaca; text-align: center; font-weight: 700; margin-bottom: 25px; }
 
         .footer { margin-top: auto; padding: 20px; text-align: center; color: #94a3b8; font-size: 0.85rem; border-top: 1px solid #e2e8f0; background: white; }
@@ -42,77 +49,115 @@
     <div class="sidebar">
         <h4 class="fw-bold mb-5 px-2">YNAD <span style="font-size: 0.6em; color: #94a3b8;">CONSTRUCTION</span></h4>
         
-        <div class="d-flex align-items-center mb-5 px-2">
+        <div class="mb-5 px-2 d-flex align-items-center">
             <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="rounded-circle me-3" width="45">
             <div>
-                <h6 id="userName" class="mb-0 fw-bold small">...</h6>
-                <p id="userRole" class="mb-0 text-muted" style="font-size: 10px;">... | ...</p>
+                <h6 class="mb-0 fw-bold small">Md. Abu Sayeed</h6>
+                <p class="mb-0 text-muted" style="font-size: 10px;">Project Engineer | 2511022</p>
             </div>
         </div>
 
         <nav class="flex-grow-1">
-            <a href="#" class="nav-link active"><i class="fas fa-edit me-3"></i> Daily Report Entry</a>
-            <a href="#" class="nav-link"><i class="fas fa-file-alt me-3"></i> My Reports</a>
-            <a href="#" class="nav-link"><i class="fas fa-chart-bar me-3"></i> Yearly Summary</a>
-            <a href="#" class="nav-link"><i class="fas fa-user me-3"></i> My Profile</a>
+            <a class="nav-link active" onclick="showPage('entryPage', this)"><i class="fas fa-edit me-3"></i> Daily Report Entry</a>
+            <a class="nav-link" onclick="showPage('reportsPage', this)"><i class="fas fa-file-alt me-3"></i> My Reports</a>
+            <a class="nav-link" onclick="showPage('monthlySummaryPage', this)"><i class="fas fa-chart-pie me-3"></i> Monthly Summary</a>
+            <a class="nav-link" onclick="showPage('yearlySummaryPage', this)"><i class="fas fa-chart-bar me-3"></i> Yearly Summary</a>
+            <a class="nav-link" onclick="showPage('profilePage', this)"><i class="fas fa-user-circle me-3"></i> My Profile</a>
         </nav>
 
-        <a href="#" class="nav-link text-danger mt-auto" onclick="location.reload()"><i class="fas fa-power-off me-3"></i> Logout</a>
+        <a class="nav-link text-danger mt-auto" onclick="location.reload()"><i class="fas fa-power-off me-3"></i> Logout</a>
     </div>
 
     <div class="main-wrapper">
         <div class="top-bar">
-            <button id="langToggle" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold">EN | বাংলা</button>
+            <button id="langToggle" class="btn btn-sm btn-outline-secondary rounded-pill px-4 fw-bold">EN | বাংলা</button>
             <div class="text-end">
-                <span id="displayMonth" class="fw-bold d-block text-primary">April</span>
-                <small class="text-muted fw-bold">2026</small>
+                <span class="fw-bold d-block text-primary" style="font-size: 1.1rem;">April 2026</span>
             </div>
         </div>
 
-        <div class="header-section">
-            <h1 class="title-main text-uppercase">Monthly Official Working Report</h1>
-            <p class="title-sub">- Field Office -</p>
-        </div>
-
-        <div class="container pb-5">
-            <div id="holidayAlert">
-                <i class="fas fa-calendar-times me-2"></i> Ajj Weekly Holiday (Friday)!
+        <div id="entryPage" class="page-content active">
+            <div class="header-section">
+                <h1 class="title-main">Monthly Official Working Report</h1>
+                <p class="title-sub">- Field Office -</p>
             </div>
+            
+            <div id="holidayAlert"><i class="fas fa-calendar-times me-2"></i> Today is Friday - Weekly Holiday!</div>
 
-            <div class="entry-card shadow-sm">
+            <div class="entry-card">
                 <form id="reportForm">
                     <div class="row g-4">
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">SELECT DATE</label>
-                            <input type="date" id="inputDate" class="form-control p-3" required>
+                            <label class="form-label">SELECT DATE</label>
+                            <input type="date" id="inputDate" class="form-control" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">DAY OF WEEK</label>
-                            <input type="text" id="inputDay" class="form-control p-3 bg-light fw-bold" readonly>
+                            <label class="form-label">DAY OF WEEK</label>
+                            <input type="text" id="inputDay" class="form-control bg-light fw-bold" readonly>
                         </div>
                         <div class="col-12">
-                            <label class="form-label small fw-bold text-muted">WORKING DETAILS *</label>
-                            <textarea id="workDetails" class="form-control p-3" rows="5" placeholder="Enter work details..." required></textarea>
+                            <label class="form-label">WORKING DETAILS *</label>
+                            <textarea id="workDetails" class="form-control" rows="5" placeholder="Enter your work progress..." required></textarea>
                         </div>
                         <div class="col-12">
-                            <label class="form-label small fw-bold text-muted">REMARKS</label>
-                            <select id="workRemarks" class="form-select p-3 text-muted" style="opacity: 0.6;">
+                            <label class="form-label">REMARKS</label>
+                            <select id="workRemarks" class="form-select text-muted" style="opacity: 0.6;">
                                 <option value="" selected>Select</option>
                                 <option value="Work on Outside">Work on Outside</option>
                                 <option value="Personal Leave">Personal Leave</option>
                                 <option value="Medical Leave">Medical Leave</option>
-                                <option value="Special Leave">Special Leave</option>
-                                <option value="Marital Leave">Marital Leave</option>
-                                <option value="Parental Leave">Parental Leave</option>
-                                <option value="Non-Pay Leave">Non-Pay Leave</option>
                                 <option value="Absent">Absent</option>
                             </select>
                         </div>
-                        <div class="col-12 text-end mt-4">
+                        <div class="col-12 text-end mt-5">
                             <button type="submit" class="btn btn-dark px-5 py-3 rounded-3 shadow fw-bold">Save Daily Report</button>
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <div id="reportsPage" class="page-content">
+            <h2 class="fw-bold mb-4">My Submitted Reports</h2>
+            <div class="table-responsive bg-white p-4 rounded-4 border">
+                <table class="table table-hover">
+                    <thead>
+                        <tr><th>Date</th><th>Day</th><th>Details</th><th>Status</th></tr>
+                    </thead>
+                    <tbody id="reportTableBody">
+                        <tr><td colspan="4" class="text-center text-muted">No reports found for this month.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="monthlySummaryPage" class="page-content">
+            <h2 class="fw-bold mb-4">April 2026 Summary</h2>
+            <div class="row g-4">
+                <div class="col-md-3"><div class="p-4 bg-white border rounded-4"><h6>Working Days</h6><h2 class="fw-bold text-primary">22</h2></div></div>
+                <div class="col-md-3"><div class="p-4 bg-white border rounded-4"><h6>Present</h6><h2 class="fw-bold text-success">18</h2></div></div>
+                <div class="col-md-3"><div class="p-4 bg-white border rounded-4"><h6>Absents</h6><h2 class="fw-bold text-danger">0</h2></div></div>
+                <div class="col-md-3"><div class="p-4 bg-white border rounded-4"><h6>Leaves</h6><h2 class="fw-bold text-warning">1</h2></div></div>
+            </div>
+        </div>
+
+        <div id="yearlySummaryPage" class="page-content">
+            <h2 class="fw-bold mb-4">Yearly Overview - 2026</h2>
+            <div class="bg-white p-5 rounded-4 border text-center text-muted">
+                <i class="fas fa-chart-line fa-3x mb-3"></i>
+                <p>Yearly performance and attendance graphs will be visible here after data collection.</p>
+            </div>
+        </div>
+
+        <div id="profilePage" class="page-content">
+            <div class="entry-card text-center">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="rounded-circle mb-4" width="120" style="border: 4px solid #f8fafc;">
+                <h3 class="fw-bold">Md. Abu Sayeed</h3>
+                <p class="text-muted mb-4">Project Engineer | ID: 2511022</p>
+                <div class="row text-start g-3">
+                    <div class="col-6"><small class="text-muted d-block">Department</small><strong>Engineering</strong></div>
+                    <div class="col-6"><small class="text-muted d-block">Location</small><strong>Field Office</strong></div>
+                </div>
             </div>
         </div>
 
