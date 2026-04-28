@@ -17,8 +17,15 @@
         :root { --sidebar-bg: #2d3448; --accent: #4a90e2; --red-holiday: #d63031; }
         
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; display: flex; overflow: hidden; }
-        .lang-bn body, .lang-bn h2, .lang-bn .nav-link, .lang-bn .btn {
+        
+        /* বাংলা মোডে নির্দিষ্ট কিছু এলিমেন্ট কালপুরুষ হবে */
+        .lang-bn h2, .lang-bn .nav-link span, .lang-bn label, .lang-bn .btn {
             font-family: 'Kalpurush', sans-serif !important;
+        }
+
+        /* ইনপুট বক্সগুলো সবসময় একই ফন্ট (Plus Jakarta Sans) থাকবে */
+        input, select, textarea, #topBarDate {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
         }
 
         /* Sidebar & Profile */
@@ -31,10 +38,6 @@
         .nav-link { color: #94a3b8; padding: 12px 15px; border-radius: 12px; text-decoration: none; display: block; margin-bottom: 5px; cursor: pointer; transition: 0.3s; }
         .nav-link.active { background: rgba(255,255,255,0.1); color: white; font-weight: 600; }
         
-        /* Layout */
-        .main-wrapper { margin-left: 280px; width: calc(100% - 280px); min-height: 100vh; display: flex; flex-direction: column; }
-        .top-bar { padding: 15px 40px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-        
         /* Toggle Switch */
         .switch-container { display: flex; align-items: center; gap: 10px; }
         .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
@@ -44,6 +47,8 @@
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(22px); }
 
+        .main-wrapper { margin-left: 280px; width: calc(100% - 280px); min-height: 100vh; display: flex; flex-direction: column; }
+        .top-bar { padding: 15px 40px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
         .page-content { display: none; padding: 40px; animation: fadeIn 0.3s ease; }
         .page-content.active { display: block; }
         .entry-card { background: white; border-radius: 20px; padding: 40px; border: 1px solid #e2e8f0; max-width: 900px; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
@@ -52,6 +57,11 @@
         .holiday-red { color: var(--red-holiday) !important; border-color: var(--red-holiday) !important; background-color: #fff1f2 !important; font-weight: bold !important; }
         #holidayAlert { display: none; background: #fff1f2; color: var(--red-holiday); padding: 15px; border-radius: 12px; border: 1px solid #fecaca; text-align: center; font-weight: 700; margin-bottom: 25px; }
         
+        /* Remarks Opacity Logic */
+        #workRemarks option[value=""] { opacity: 0.5; }
+        #workRemarks { opacity: 1; color: #334155; }
+        #workRemarks:has(option[value=""]:checked) { opacity: 0.6; }
+
         .footer { margin-top: auto; padding: 20px; text-align: center; color: #94a3b8; font-size: 0.85rem; border-top: 1px solid #e2e8f0; background: white; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
@@ -60,14 +70,12 @@
 
     <div class="sidebar">
         <h4 class="fw-bold mb-3 px-2">YNAD <span style="font-size: 0.6em; color: #94a3b8;">CONSTRUCTION</span></h4>
-        
         <div class="profile-box">
             <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="profile-img" alt="User">
             <h6 class="profile-name">Md. Abu Sayeed</h6>
             <p class="profile-desc">Project Engineer</p>
             <p class="profile-desc">ID: 2511022</p>
         </div>
-
         <nav class="flex-grow-1">
             <a class="nav-link active" onclick="showPage('entryPage', this)"><i class="fas fa-edit me-3"></i> <span data-en="Daily Report Entry" data-bn="দৈনিক রিপোর্ট এন্ট্রি">Daily Report Entry</span></a>
             <a class="nav-link" onclick="showPage('reportsPage', this)"><i class="fas fa-file-alt me-3"></i> <span data-en="My Reports" data-bn="আমার রিপোর্ট">My Reports</span></a>
@@ -87,7 +95,7 @@
                 </label>
                 <span class="small fw-bold text-muted">BN</span>
             </div>
-            <div class="text-end"><span id="topBarDate" class="fw-bold text-primary">28 Apr 2026</span></div>
+            <div class="text-end"><span id="topBarDate" class="fw-bold text-primary"></span></div>
         </div>
 
         <div id="entryPage" class="page-content active">
@@ -103,10 +111,11 @@
                         <div class="col-md-6">
                             <label class="form-label fw-bold" data-en="SELECT DATE" data-bn="তারিখ নির্বাচন করুন">SELECT DATE</label>
                             <input type="date" id="mainDateInput" class="form-control fw-bold">
+                            <div id="formattedDisplay" class="mt-2 small fw-bold text-accent" style="color: var(--accent);"></div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold" data-en="DAY OF WEEK" data-bn="সাপ্তাহিক দিন">DAY OF WEEK</label>
-                            <input type="text" id="displayDay" class="form-control bg-light fw-bold" readonly value="Tuesday">
+                            <input type="text" id="displayDay" class="form-control bg-light fw-bold" readonly>
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-bold" data-en="WORKING DETAILS *" data-bn="কাজের বিবরণ *">WORKING DETAILS *</label>
@@ -115,7 +124,7 @@
                         <div class="col-12">
                             <label class="form-label fw-bold" data-en="REMARKS" data-bn="মন্তব্য">REMARKS</label>
                             <select id="workRemarks" class="form-select fw-bold">
-                                <option value="">Select</option>
+                                <option value="" selected>Select</option>
                                 <option value="Work on Outside">Work on Outside</option>
                                 <option value="Personal Leave">Personal Leave</option>
                                 <option value="Medical Leave">Medical Leave</option>
@@ -135,11 +144,7 @@
             </div>
         </div>
 
-        <div id="reportsPage" class="page-content"><h2 data-en="My Reports" data-bn="আমার রিপোর্ট">My Reports</h2></div>
-        <div id="summaryPage" class="page-content"><h2 data-en="Monthly Summary" data-bn="মাসিক সারাংশ">Monthly Summary</h2></div>
-        <div id="yearlyPage" class="page-content"><h2 data-en="Yearly Summary" data-bn="বার্ষিক সারাংশ">Yearly Summary</h2></div>
-        <div id="profilePage" class="page-content"><h2 data-en="My Profile" data-bn="আমার প্রোফাইল">My Profile</h2></div>
-
+        <div id="reportsPage" class="page-content"><h2>My Reports</h2></div>
         <footer class="footer">Copyright © 2026 / Developed by Md. Abu Sayeed</footer>
     </div>
 
