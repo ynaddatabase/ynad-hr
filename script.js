@@ -1,19 +1,12 @@
 const enMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const enDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-// পেজ সুইচিং লজিক
-function showPage(pageId, element) {
-    // সব পেজ হাইড করা
-    document.querySelectorAll('.page-content').forEach(page => page.classList.remove('active'));
-    // টার্গেট পেজ শো করা
-    document.getElementById(pageId).classList.add('active');
-    
-    // সব মেনু থেকে একটিভ ক্লাস সরানো
-    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-    // ক্লিক করা মেনুতে একটিভ ক্লাস দেওয়া
-    element.classList.add('active');
-    
-    localStorage.setItem('last_page', pageId);
+// উপরের তারিখটি আজীবন বর্তমান তারিখ থাকবে
+function setTopBarCurrentDate() {
+    const d = new Date();
+    const day = d.getDate();
+    const formattedDate = `${day < 10 ? '0'+day : day} ${enMonths[d.getMonth()]} ${d.getFullYear()}`;
+    document.getElementById('topBarDate').innerText = formattedDate;
 }
 
 function updateUI() {
@@ -24,14 +17,11 @@ function updateUI() {
     if(!val) return;
     const d = new Date(val);
 
-    // ১. বাংলা মোড হ্যান্ডলিং
+    // ১. ল্যাঙ্গুয়েজ সেটআপ
     if(isBN) document.documentElement.classList.add('lang-bn');
     else document.documentElement.classList.remove('lang-bn');
 
-    // ২. ডেট ও ডে ফরম্যাট (Fixed English)
-    const day = d.getDate();
-    const formattedDate = `${day < 10 ? '0'+day : day} ${enMonths[d.getMonth()]} ${d.getFullYear()}`;
-    document.getElementById('topBarDate').innerText = formattedDate;
+    // ২. সপক্ষের দিন আপডেট (Fixed English)
     document.getElementById('displayDay').value = enDays[d.getDay()];
 
     // ৩. শুক্রবার চেক
@@ -46,7 +36,7 @@ function updateUI() {
         alertBox.style.display = 'none';
     }
 
-    // ৪. ট্রান্সলেশন
+    // ৪. টেক্সট ট্রান্সলেশন
     document.querySelectorAll('[data-en]').forEach(el => {
         const text = isBN ? el.getAttribute('data-bn') : el.getAttribute('data-en');
         if(el.children.length === 0) el.innerText = text;
@@ -55,11 +45,17 @@ function updateUI() {
         }
     });
 
-    // ৫. রিমার্কস ওপাসিটি
     const remarks = document.getElementById('workRemarks');
     remarks.style.opacity = remarks.value === "" ? "0.6" : "1";
 
     saveToStorage();
+}
+
+function showPage(pageId, element) {
+    document.querySelectorAll('.page-content').forEach(page => page.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+    element.classList.add('active');
 }
 
 function saveToStorage() {
@@ -80,24 +76,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateInput = document.getElementById('mainDateInput');
     const today = new Date().toISOString().split('T')[0];
     
+    // ইনিশিয়াল সেটিংস
+    setTopBarCurrentDate(); // টপ বার সবসময় আজকেই থাকবে
     dateInput.value = today;
     dateInput.max = today;
 
     loadFromStorage();
     updateUI();
 
-    // ইভেন্ট লিসেনারস
     dateInput.addEventListener('change', updateUI);
     document.getElementById('langSwitch').addEventListener('change', updateUI);
     document.getElementById('workDetails').addEventListener('input', saveToStorage);
     document.getElementById('workRemarks').addEventListener('change', updateUI);
     
-    // ক্লিয়ার ফাংশন (Current Date এ ফিরে যাবে)
-    document.getElementById('clearBtn').addEventListener('click', () => {
+    // ক্লিয়ার অল ট্রিগার
+    document.getElementById('clearBtnTrigger').addEventListener('click', () => {
         document.getElementById('workDetails').value = '';
         document.getElementById('workRemarks').selectedIndex = 0;
         document.getElementById('mainDateInput').value = today;
-        localStorage.clear();
+        localStorage.removeItem('ynad_date');
+        localStorage.removeItem('ynad_details');
+        localStorage.removeItem('ynad_remarks');
         updateUI();
     });
 });
