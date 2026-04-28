@@ -1,25 +1,106 @@
-<main class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
-                <div class="card-header bg-dark text-white py-3">
-                    <h5 class="mb-0"><i class="fas fa-edit me-2"></i> Daily Work Entry Panel</h5>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YNAD Portal - Daily Entry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root { --sidebar-bg: #2d3448; --accent: #4a90e2; --bg-light: #f4f7fa; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-light); color: #2d3436; }
+        
+        /* Sidebar */
+        .sidebar { width: 280px; height: 100vh; background: var(--sidebar-bg); position: fixed; padding: 25px; color: white; }
+        .nav-link { color: #a4b0be; padding: 12px 15px; border-radius: 12px; transition: 0.3s; margin-bottom: 5px; }
+        .nav-link.active { background: rgba(255,255,255,0.1); color: white; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: white; }
+
+        /* Main Content */
+        .main-wrapper { margin-left: 280px; padding: 30px; }
+        .report-header { background: white; border-radius: 20px; padding: 20px 30px; margin-bottom: 30px; border: 1px solid #e1e8ef; }
+        
+        /* Form Styling */
+        .entry-card { background: white; border-radius: 24px; padding: 40px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
+        .form-control, .form-select { border-radius: 12px; padding: 14px; border: 1px solid #e1e8ef; background-color: #fcfdfe; }
+        .form-control:focus { box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1); border-color: var(--accent); }
+        
+        .btn-save { background: #2d3448; color: white; padding: 12px 35px; border-radius: 12px; font-weight: 600; border: none; transition: 0.3s; }
+        .btn-save:hover { background: #1a1f2b; transform: translateY(-2px); }
+
+        .info-box { background: #eef5ff; border-radius: 15px; padding: 20px; border-left: 5px solid var(--accent); }
+        .office-badge { background: #e1e8ef; color: #2d3448; font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar d-flex flex-column">
+        <div class="mb-5 px-2">
+            <h4 class="fw-bold tracking-tight">YNAD <span class="text-info">CONSTRUCTION</span></h4>
+        </div>
+        
+        <div class="user-profile mb-5 px-2">
+            <div class="d-flex align-items-center mb-3">
+                <img id="userPhoto" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="rounded-circle me-3" width="55" height="55" style="border: 2px solid rgba(255,255,255,0.2);">
+                <div>
+                    <h6 id="userName" class="mb-0 fw-bold small text-white">...</h6>
+                    <p class="mb-0 x-small text-muted" style="font-size: 11px;"><span id="userDesig">...</span> | <span id="userID">...</span></p>
+                    <span id="officeTag" class="office-badge">FIELD OFFICE</span>
                 </div>
-                <div class="card-body p-4 bg-white">
+            </div>
+        </div>
+
+        <nav class="nav flex-column flex-grow-1">
+            <a class="nav-link active" href="#"><i class="fas fa-edit me-3"></i> Daily Report Entry</a>
+            <a class="nav-link" href="#"><i class="fas fa-file-invoice me-3"></i> My Reports</a>
+            <a class="nav-link" href="#"><i class="fas fa-calendar-check me-3"></i> Monthly Summary</a>
+            <a class="nav-link" href="#"><i class="fas fa-user-circle me-3"></i> Profile</a>
+        </nav>
+
+        <a class="nav-link text-danger mt-auto" href="#" onclick="logout()"><i class="fas fa-power-off me-3"></i> Logout</a>
+    </div>
+
+    <div class="main-wrapper">
+        <header class="report-header d-flex justify-content-between align-items-center">
+            <div>
+                <h6 class="text-muted small fw-bold mb-1 text-uppercase">Monthly Official Working Report</h6>
+                <h5 class="fw-bold mb-0" id="officeReportTitle">- Field Office -</h5>
+            </div>
+            <div class="text-end">
+                <h4 class="fw-bold text-primary mb-0" id="currentMonthDisplay">April</h4>
+                <p class="text-muted small mb-0" id="currentYearDisplay">2026</p>
+            </div>
+        </header>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="entry-card h-100">
+                    <h5 class="fw-bold mb-4"><i class="fas fa-pen-nib text-primary me-2"></i> Daily Report Entry</h5>
+                    
                     <form id="dailyReportForm">
-                        <div class="row g-3">
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold text-muted small">Select Date</label>
-                                <input type="date" id="entryDate" class="form-control custom-input" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold text-muted small">Day</label>
-                                <input type="text" id="entryDay" class="form-control custom-input bg-light fw-bold" readonly>
-                            </div>
+                        <div class="row g-4">
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-muted small">Remarks / Status</label>
-                                <select id="workRemarks" class="form-select custom-input" required>
-                                    <option value="" selected disabled>Choose Status...</option>
+                                <label class="form-label small fw-bold text-muted">Select Date</label>
+                                <input type="date" id="entryDate" class="form-control" required>
+                                <div class="mt-2 small text-success"><i class="fas fa-check-circle"></i> You can enter reports for today or previous dates.</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Day</label>
+                                <input type="text" id="entryDay" class="form-control bg-light fw-bold" readonly>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-muted">Working Details *</label>
+                                <textarea id="workDetails" class="form-control" rows="5" placeholder="Describe the work you have done today..." required></textarea>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label small fw-bold text-muted">Remarks *</label>
+                                <select id="workRemarks" class="form-select" required>
+                                    <option value="" disabled selected>Select a remark</option>
                                     <option value="Present">Present (Regular Work)</option>
                                     <option value="Work on Outside">Work on Outside</option>
                                     <option value="Personal Leave">Personal Leave</option>
@@ -31,58 +112,37 @@
                                     <option value="Absent">Absent</option>
                                 </select>
                             </div>
-                            <div class="col-12">
-                                <label class="form-label fw-bold text-muted small">Working Details</label>
-                                <textarea id="workDetails" class="form-control custom-input" rows="3" placeholder="Enter your work description here..." required></textarea>
-                            </div>
-                            <div class="col-12 text-end">
-                                <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-pill">
-                                    <i class="fas fa-save me-2"></i> Submit Today's Report
-                                </button>
+
+                            <div class="col-12 text-end mt-5">
+                                <button type="button" class="btn btn-light px-4 me-2 rounded-3 border">Clear</button>
+                                <button type="submit" class="btn btn-save shadow-sm">Save Report</button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <div class="mt-5">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="fw-bold"><i class="fas fa-list me-2"></i> Recent Submission Overview</h6>
-                    <span class="badge bg-info">Updated Live</span>
+            <div class="col-lg-4">
+                <div class="info-box mb-4">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-info-circle me-2"></i> Important Notes</h6>
+                    <ul class="small text-muted ps-3">
+                        <li class="mb-2">Today's report is mandatory. Please submit before end of day.</li>
+                        <li class="mb-2">You can edit previous date reports anytime.</li>
+                        <li class="text-danger">Future date reports are not allowed.</li>
+                    </ul>
                 </div>
-                <div class="table-responsive shadow-sm rounded-3">
-                    <table class="table table-hover align-middle mb-0 bg-white">
-                        <thead class="table-dark">
-                            <tr>
-                                <th class="ps-3">Date</th>
-                                <th>Day</th>
-                                <th style="width: 40%;">Working Details</th>
-                                <th>Remarks</th>
-                                <th class="text-center">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recentEntriesBody" class="small">
-                            <tr>
-                                <td colspan="5" class="text-center py-4 text-muted">No reports submitted yet.</td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                <div class="bg-white p-4 rounded-4 border">
+                    <h6 class="fw-bold mb-3 small">Recent Submissions</h6>
+                    <div id="recentList" class="small">
+                        <div class="text-center py-4 text-muted">No entries yet</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</main>
 
-<style>
-    .custom-input {
-        border: 1px solid #dee2e6;
-        padding: 12px;
-        border-radius: 8px;
-        transition: 0.3s;
-    }
-    .custom-input:focus {
-        border-color: #3498db;
-        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-    }
-    .table-dark { background-color: #2c3e50 !important; }
-</style>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
